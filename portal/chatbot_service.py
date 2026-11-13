@@ -27,6 +27,18 @@ ALIASES = {
     "Kisan Credit Card": ("kcc", "kisan credit", "farmer credit", "விவசாய கடன்"),
     "Soil Health Card Request": ("soil test", "soil health", "soil card", "மண் பரிசோதனை"),
     "e-NAM Farmer Registration": ("enam", "e nam", "national agriculture market", "மின்னணு சந்தை"),
+    "NSAP Pensions": (
+        "nsap",
+        "pension",
+        "pensions",
+        "old age pension",
+        "senior citizen",
+        "senior citizens",
+        "senior citizen pension",
+        "ignoaps",
+        "indira gandhi national old age pension",
+        "elderly pension",
+    ),
 }
 
 
@@ -46,20 +58,84 @@ def _query_terms(text):
     return terms
 
 
-def retrieve_schemes(message, limit=3):
-    """Retrieve the best matching active scheme/service records from the DB."""
+
+
+def retrieve_schemes(message, limit=6):
+    """Retrieve relevant active schemes/services from the selected department."""
+    query = (message or "").casefold()
+
+    records = Scheme.objects.filter(
+        is_active=True
+    ).select_related("department")
+
+    # Keep existing pension handling
+    pension_keywords = (
+        "pension", "pensions", "old age", "senior citizen",
+        "senior citizens", "elderly", "ignoaps", "nsap",
+    )
+
+    if any(word in query for word in pension_keywords):
+        scheme = records.filter(name__iexact="NSAP Pensions").first()
+        return [scheme] if scheme else []
+
+    # Department keywords
+    department_keywords = {
+        "AGR": (
+            "farmer", "farmers", "farming", "agriculture",
+            "agricultural", "விவசாயி", "விவசாயம்",
+        ),
+        "EDU": (
+            "education", "educational", "student", "students",
+            "scholarship", "scholarships", "college", "school",
+            "கல்வி", "மாணவர்", "மாணவர்கள்", "உதவித்தொகை",
+        ),
+        "HLT": (
+            "health", "healthcare", "medical", "hospital",
+            "pregnancy", "maternity", "mother", "baby",
+            "doctor", "abha", "ayushman", "pm-jay",
+            "மருத்துவம்", "உடல்நலம்", "கர்ப்பிணி", "மருத்துவமனை",
+        ),
+    }
+
+    selected_department = None
+
+    for code, keywords in department_keywords.items():
+        if any(word in query for word in keywords):
+            selected_department = code
+            break
+
+    if selected_department:
+        department_records = records.filter(
+            department__code=selected_department
+        ).order_by("name")
+
+        # Broad department question: return all its active items
+        department_only_words = department_keywords[selected_department]
+        other_terms = [
+            term for term in _query_terms(message)
+            if term not in department_only_words
+        ]
+
+        if not other_terms:
+            return list(department_records[:limit])
+
+        records = department_records
+
     terms = _query_terms(message)
+
     if not terms:
         return []
 
-    records = Scheme.objects.filter(is_active=True).select_related("department")
     matches = []
+
     for scheme in records:
         name = scheme.name.casefold()
         description = (scheme.description or "").casefold()
         department = scheme.department.name.casefold()
         documents = (scheme.required_documents or "").casefold()
+
         score = 0
+
         for term in terms:
             if term in name:
                 score += 5
@@ -70,17 +146,20 @@ def retrieve_schemes(message, limit=3):
             elif term in documents:
                 score += 1
 
-        query = (message or "").casefold()
         for canonical_name, aliases in ALIASES.items():
-            if scheme.name.casefold() == canonical_name.casefold() and any(alias in query for alias in aliases):
-                score += 8
+            if scheme.name.casefold() == canonical_name.casefold():
+                if any(alias.casefold() in query for alias in aliases):
+                    score += 8
 
         if score:
             matches.append((score, scheme))
 
-    matches.sort(key=lambda pair: (pair[0], pair[1].name), reverse=True)
-    return [scheme for _, scheme in matches[:limit]]
+    matches.sort(
+        key=lambda item: (item[0], item[1].name),
+        reverse=True,
+    )
 
+    return [scheme for _, scheme in matches[:limit]]
 
 def _profile_context(request, message):
     if not request.user.is_authenticated:
@@ -225,8 +304,14 @@ def _system_prompt(request, message, schemes):
     return (
         "You are the AI Seva citizen guide for Indian government schemes and services. "
         f"Reply in {language}, matching the citizen's language. Use short, simple, respectful sentences. "
-        "Answer only from the AI Seva context below. If the context does not contain an answer, "
-        "say you do not have that information and direct the citizen to the official link when available. "
+        "Use the AI Seva context below as the primary source of information. "
+        "If matched_schemes_and_services contains relevant records, you MUST explain those records to the citizen. "
+        "Never say that AI Seva has no pension schemes if NSAP Pensions is present in the matched records. "
+        "Explain only the details available in the matched records. "
+        "If a detail is missing, clearly say it is not available. "
+        "Do not use outside knowledge to fill missing scheme details. "
+        "Do not invent benefits, required documents, application steps, deadlines, or official portal features. "
+        "Keep answers clear, relevant, and easy to understand. "
         "Never invent eligibility rules, benefit amounts, deadlines, soil measurements, or application statuses. "
         "A recommender result is only a potential match based on configured rules; never declare the citizen officially eligible. "
         "Only an authorized officer decides an application. Explain the latest status remark without exposing SLPS scores. "
@@ -249,7 +334,7 @@ def _groq_chat_completion(messages):
         "model": settings.GROQ_MODEL or "openai/gpt-oss-120b",
         "messages": messages,
         "temperature": 0.2,
-        "max_completion_tokens": 450,
+        "max_completion_tokens": 700,
         "stream": False,
     }
     request = urllib.request.Request(
@@ -259,6 +344,7 @@ def _groq_chat_completion(messages):
             "Authorization": f"Bearer {api_key}",
             "Content-Type": "application/json",
             "Accept": "application/json",
+            "User-Agent": "AI-Seva/1.0",
         },
         method="POST",
     )
@@ -326,10 +412,7 @@ def answer_chat_message(request, message):
     redacted_message = TRACKING_ID_PATTERN.sub("my application", message)
     redacted_message = re.sub(r"\b\d{12}\b", "[identity number]", redacted_message)
     redacted_message = re.sub(r"\b\d{10}\b", "[phone number]", redacted_message)
-    prior_questions = [
-        entry["content"] for entry in history if entry["role"] == "user"
-    ][-2:]
-    matches = retrieve_schemes(" ".join([*prior_questions, message]))
+    matches = retrieve_schemes(message)
 
     messages = [{"role": "system", "content": _system_prompt(request, message, matches)}]
     messages.extend(history)

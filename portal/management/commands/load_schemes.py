@@ -20,7 +20,7 @@ DATA = [
     ("Housing & Rural Development", "HRD", [
         ("PMAY-Gramin", "Housing assistance for eligible rural households.", "", "", 18, 300000),
         ("PMAY-Urban", "Housing assistance under eligible urban components.", "", "", 18, None),
-        ("NSAP Pensions", "Social assistance pensions for eligible beneficiaries.", "", "", 60, 300000),
+        ("NSAP Pensions", "Social assistance pension for eligible BPL households, including older persons aged 60 and above. Central assistance is Rs.200 per month for ages 60-79 and Rs.500 per month for ages 80 and above. State government may provide additional assistance. Verify applicable state rules before applying.", "", "", 60, None),
         ("DAY-NRLM", "Livelihood support through rural self-help groups.", "", "", 18, None),
     ]),
     ("Labour, Skill & MSME", "LSM", [

@@ -6,16 +6,35 @@ AGRICULTURE_ITEMS = [
         "name": "PM-KISAN",
         "full_name": "Pradhan Mantri Kisan Samman Nidhi",
         "item_type": "Scheme",
-        "summary": "Income support guidance for eligible landholding farmer families.",
-        "description": "Eligible farmer families can receive ₹6,000 per year in three instalments through DBT, subject to current scheme rules and verification.",
-        "eligibility": "Cultivable land records and official exclusion criteria are checked. Eligibility is not decided by income alone; confirm current rules on the official portal.",
-        "benefits": ["Annual income support, if approved", "Three instalments paid through DBT under scheme rules"],
-        "documents": ["Identity details for official verification", "Land ownership records", "Bank account proof", "Other declarations required by the official process"],
-        "workflow": ["Enter applicant and land details", "Review the document checklist", "Submit an AI Seva assistance request", "Use the official portal or authorized office for verification and enrollment"],
-        "result": ["AI Seva tracking ID", "AI Seva request status", "Official beneficiary or instalment status only when checked through an authorized source"],
+        "summary": "Income support for eligible landholding farmer families.",
+        "description": "PM-KISAN provides ₹6,000 per year to each eligible landholding farmer family in three equal instalments of ₹2,000 through Direct Benefit Transfer (DBT). There is no 2-hectare maximum landholding limit.",
+        "eligibility": "Eligible landholding farmer families whose cultivable land is recorded in official land records can apply, subject to government verification. Tenant farmers and sharecroppers who do not have eligible landholding recorded in their family's name are generally not eligible under standard PM-KISAN rules. The earlier 2-hectare limit was removed in 2019. Certain institutional landholders and families covered by specified exclusion categories are not eligible. Income-tax payers and certain other specified categories are excluded. Final eligibility is determined by official verification.",
+        "benefits": [
+            "₹6,000 per year per eligible farmer family",
+            "Three instalments of ₹2,000 each through DBT",
+            "Benefit subject to official approval and verification"
+        ],
+        "documents": [
+            "Aadhaar details",
+            "Land ownership records",
+            "Bank account details",
+            "Other documents required by the State or official verification process"
+        ],
+        "workflow": [
+            "Enter applicant and land details",
+            "Review the document checklist",
+            "Submit an AI Seva assistance request",
+            "Complete verification and enrollment through the official PM-KISAN portal or authorized office"
+        ],
+        "result": [
+            "AI Seva tracking ID",
+            "AI Seva request status",
+            "Official beneficiary or instalment status only when checked through an authorized source"
+        ],
         "final_output": "DBT benefit after official approval",
         "official_link": "https://pmkisan.gov.in/",
     },
+
     {
         "slug": "pmfby",
         "name": "PM Fasal Bima Yojana",

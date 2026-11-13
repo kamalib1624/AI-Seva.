@@ -2,22 +2,124 @@
 
 HEALTH_ITEMS = [
     {
-        "slug": "pm-jay", "code": "PM-JAY", "name": "Ayushman Bharat PM-JAY",
-        "item_type": "Scheme", "slps_enabled": True, "weight": 1.2, "target_days": 7,
-        "summary": "Prepare a beneficiary search and coverage guidance request.",
-        "eligibility": "The official PM-JAY system checks the beneficiary database and applicable rules. AI Seva cannot confirm coverage or issue an e-card.",
-        "documents": ["Accepted identity or family eligibility proof (use a redacted demo copy)"],
-        "optional_documents": [],
-        "official_url": "https://pmjay.gov.in/",
-        "fields": ["state", "district", "family_reference", "identity_consent"],
-        "steps": [
-            {"title": "Applicant and family", "description": "Enter the applicant’s contact details and the state, district and non-sensitive family reference for the beneficiary search.", "fields": ["full_name", "date_of_birth", "gender", "mobile_number", "address", "state", "district", "family_reference"]},
-            {"title": "Official identity verification", "description": "Acknowledge that beneficiary search and e-KYC are completed on the official PM-JAY portal or at an authorised centre. AI Seva does not collect Aadhaar or OTPs.", "fields": ["identity_consent"]},
-            {"title": "Household and review priority", "description": "Provide household details used by the experimental administrative SLPS. Any urgent request must be checked by an authorised officer.", "fields": ["category", "income", "dependents", "has_prior_benefit", "is_rural", "is_urgent", "urgent_reason"]},
-            {"title": "Supporting document", "description": "Upload the listed redacted or sample proof for this AI Seva demo record.", "documents": True},
-            {"title": "Review PM-JAY request", "description": "Review your beneficiary-search request. The official system must confirm eligibility and issue any card.", "review": True},
-        ],
-    },
+    "slug": "pm-jay",
+    "code": "PM-JAY",
+    "name": "Ayushman Bharat PM-JAY",
+    "item_type": "Scheme",
+    "slps_enabled": True,
+    "weight": 1.2,
+    "target_days": 7,
+
+    "summary": (
+        "Guidance for checking PM-JAY beneficiary eligibility "
+        "and understanding health coverage."
+    ),
+
+    "description": (
+        "Ayushman Bharat Pradhan Mantri Jan Arogya Yojana "
+        "(AB PM-JAY) provides eligible beneficiary families "
+        "with cashless hospitalisation coverage at empanelled "
+        "public and private hospitals. Coverage is subject to "
+        "the applicable scheme rules and beneficiary verification."
+    ),
+
+    "eligibility": (
+        "Eligibility for most beneficiaries is based on the "
+        "government's approved beneficiary database and applicable "
+        "scheme rules. AI Seva cannot independently confirm eligibility. "
+        "Senior citizens aged 70 years and above are also covered "
+        "under the expanded PM-JAY provision, irrespective of income, "
+        "subject to official enrolment and verification. "
+        "Final eligibility must be confirmed through the official system."
+    ),
+
+    "benefits": [
+        "Health cover of up to Rs. 5 lakh per eligible family per year "
+        "for covered hospitalisation.",
+        "Cashless treatment at empanelled public and private hospitals.",
+        "Coverage includes eligible pre-existing conditions, subject "
+        "to scheme rules.",
+        "The benefit is subject to official beneficiary verification "
+        "and applicable package rules."
+    ],
+
+    "documents": [
+        "Accepted identity proof as specified by the official PM-JAY process.",
+        "Accepted family or beneficiary eligibility proof, if required.",
+        "For the AI Seva demonstration, use only redacted sample documents."
+    ],
+
+    "optional_documents": [
+        "Additional supporting documents requested by the authorised "
+        "PM-JAY verification centre, if applicable."
+    ],
+
+    "official_url": "https://pmjay.gov.in/",
+
+    "fields": [
+        "state",
+        "district",
+        "family_reference",
+        "identity_consent"
+    ],
+
+    "steps": [
+        {
+            "title": "Select location",
+            "description": (
+                "Select the applicant's state and district. "
+                "Use a non-sensitive demo family reference for testing."
+            ),
+            "fields": ["state", "district", "family_reference"]
+        },
+        {
+            "title": "Official eligibility verification",
+            "description": (
+                "Check beneficiary eligibility through the official "
+                "PM-JAY portal or an authorised centre. Complete e-KYC "
+                "only through the official process. AI Seva does not "
+                "collect Aadhaar numbers or OTPs."
+            ),
+            "fields": ["identity_consent"]
+        },
+        {
+            "title": "Administrative review priority",
+            "description": (
+                "Any household information used for experimental "
+                "AI Seva administrative prioritisation is separate "
+                "from PM-JAY eligibility. An authorised officer must "
+                "review urgent requests."
+            ),
+            "fields": [
+                "category",
+                "income",
+                "dependents",
+                "has_prior_benefit",
+                "is_rural",
+                "is_urgent",
+                "urgent_reason"
+            ]
+        },
+        {
+            "title": "Supporting document",
+            "description": (
+                "Upload only redacted sample proof for this AI Seva demo. "
+                "Do not upload real Aadhaar numbers or sensitive documents."
+            ),
+            "documents": True
+        },
+        {
+            "title": "Review PM-JAY request",
+            "description": (
+                "Review the beneficiary-search guidance request. "
+                "The official PM-JAY system alone confirms eligibility "
+                "and issues the beneficiary card."
+            ),
+            "review": True
+        }
+    ],
+},
+
     {
         "slug": "pmmvy", "code": "PMMVY", "name": "PM Matru Vandana Yojana",
         "item_type": "Scheme", "slps_enabled": True, "weight": 1.0, "target_days": 20,
@@ -118,8 +220,9 @@ HEALTH_ITEMS_BY_CODE = {item["code"]: item for item in HEALTH_ITEMS}
 HEALTH_SLPS_CODES = {item["code"] for item in HEALTH_ITEMS if item["slps_enabled"]}
 
 
+
 def seed_health_catalog():
-    """Load the Health catalog into the shared scheme/recommendation tables."""
+    """Load detailed Health catalog into the shared scheme table."""
     from portal.models import Department, Scheme
 
     department, _ = Department.objects.update_or_create(
@@ -130,20 +233,59 @@ def seed_health_catalog():
             "level": "Central",
         },
     )
+
     for item in HEALTH_ITEMS:
-        document_labels = list(item["documents"])
-        for conditional_labels in item.get("conditional_documents", {}).values():
-            document_labels.extend(label for label in conditional_labels if label not in document_labels)
+        description_sections = [
+            item.get("summary", ""),
+            item.get("description", ""),
+            "Eligibility: " + item.get("eligibility", "Not specified."),
+        ]
+
+        if item.get("benefits"):
+            description_sections.append(
+                "Benefits: " + "; ".join(item["benefits"])
+            )
+
+        if item.get("steps"):
+            step_details = []
+            for step in item["steps"]:
+                step_details.append(
+                    step.get("title", "") + ": " +
+                    step.get("description", "")
+                )
+            description_sections.append(
+                "Application Steps: " + "; ".join(step_details)
+            )
+
+        if item.get("optional_documents"):
+            description_sections.append(
+                "Optional Documents: " +
+                "; ".join(item["optional_documents"])
+            )
+
+        if item.get("conditional_documents"):
+            conditional_details = []
+            for condition, documents in item["conditional_documents"].items():
+                conditional_details.append(
+                    condition + ": " + ", ".join(documents)
+                )
+            description_sections.append(
+                "Conditional Documents: " + "; ".join(conditional_details)
+            )
+
         Scheme.objects.update_or_create(
             department=department,
             name=item["name"],
             defaults={
                 "item_type": item["item_type"],
-                "description": item["summary"],
+                "description": "\n\n".join(
+                    section for section in description_sections if section
+                ),
                 "official_link": item["official_url"],
-                "required_documents": "\n".join(document_labels),
+                "required_documents": "\n".join(item.get("documents", [])),
                 "access_level": "Partial",
                 "level": "Central",
+                "state": "",
                 "is_active": True,
                 "min_age": None,
                 "max_age": None,
@@ -152,4 +294,5 @@ def seed_health_catalog():
                 "allowed_occupations": "",
             },
         )
+
     return len(HEALTH_ITEMS)

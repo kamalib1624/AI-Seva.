@@ -15,20 +15,47 @@ EDUCATION_SCHEMES = [
         "category": "Scholarships",
     },
     {
-        "slug": "central-sector-scholarship",
-        "name": "Central Sector Scholarship",
-        "full_name": "Central Sector Scheme of Scholarship for College and University Students",
-        "summary": "Explore scholarship guidance for eligible college and university students.",
-        "description": "AI Seva provides a guided overview of the Central Sector scholarship application. Selection and continuation depend on the current official scheme guidelines and the information submitted by the student.",
-        "eligibility": "Based on academic merit, family income and other current scheme conditions. Confirm the latest notice on the official portal.",
-        "benefits": ["Review the application information to prepare", "Keep academic and institution records organized"],
-        "documents": ["Class 12 marksheet and board merit details", "Current institution, course and admission proof", "Income certificate if required by the current notice", "Bank details requested through the official portal"],
-        "workflow": ["Check the current eligibility rules and application window", "Prepare academic, income and institution information", "Submit through the National Scholarship Portal"],
-        "final_output": "A guided checklist for preparing a scholarship application.",
-        "official_url": "https://scholarships.gov.in/",
-        "item_type": "Scheme",
-        "category": "Scholarships",
-    },
+    "slug": "central-sector-scholarship",
+    "name": "Central Sector Scholarship",
+    "full_name": "PM-USP Central Sector Scheme of Scholarship for College and University Students",
+    "summary": "Financial assistance for meritorious college and university students from families with limited income.",
+    "description": "The Government of India provides financial assistance to eligible students to support their higher education expenses. Scholarships are awarded based on Class 12 academic merit and family income.",
+    "eligibility": (
+        "For fresh applications: Students must be above the 80th percentile "
+        "of successful candidates in their respective Class 12 board and stream. "
+        "They must pursue a regular college or university course, have annual "
+        "family income up to Rs. 4.5 lakh, and must not receive another scholarship "
+        "or fee reimbursement. Diploma students and students who took a drop "
+        "after Class 12 are not eligible. Institution and course recognition "
+        "conditions also apply. Final selection is subject to official verification."
+    ),
+    "benefits": [
+        "Rs. 12,000 per year for the first three years of undergraduate courses.",
+        "Rs. 20,000 per year at postgraduate level.",
+        "For B.E. and B.Tech: Rs. 12,000 per year for the first three years and Rs. 20,000 in the fourth year.",
+        "Scholarship amount is transferred directly to the beneficiary's bank account through DBT.",
+    ],
+    "documents": [
+        "Class 12 marksheet",
+        "Family income certificate",
+        "Caste certificate for reserved category applicants, if applicable",
+        "Disability certificate, if applicable",
+        "Previous year marksheet for renewal applications",
+    ],
+    "workflow": [
+        "Check eligibility and the latest scholarship notification.",
+        "Complete One-Time Registration on the National Scholarship Portal.",
+        "Select PM-USP Central Sector Scheme of Scholarship.",
+        "Enter academic, institution and family income details.",
+        "Upload the required documents and submit the application.",
+        "Ensure institute and government verification is completed.",
+    ],
+    "final_output": "Scholarship application submitted for official verification and selection.",
+    "official_url": "https://scholarships.gov.in/",
+    "item_type": "Scheme",
+    "category": "Scholarships",
+},
+
     {
         "slug": "pm-vidyalaxmi",
         "name": "PM Vidyalaxmi",

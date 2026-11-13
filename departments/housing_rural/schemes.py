@@ -32,14 +32,14 @@ HOUSING_ITEMS = [
         "result": ["AI Seva tracking ID", "Request status"], "official_link": "https://nrlm.gov.in/",
     },
     {
-        "slug": "mgnrega-job-card", "name": "MGNREGA Job Card Request",
-        "full_name": "Mahatma Gandhi National Rural Employment Guarantee Act", "item_type": "Service",
+        "slug": "mgnrega-job-card", "name": "Job Card Request (VB-G RAM G)",
+        "full_name": "Viksit Bharat - Guarantee for Rozgar and Ajeevika Mission (Gramin)", "item_type": "Service",
         "summary": "Prepare a household request for a rural job card and wage work.",
-        "description": "Rural households may apply for a job card through the Gram Panchayat under MGNREGA. Work demand and job card processing are handled by the official local administration.",
+        "description": "VB-G RAM G replaced MGNREGA from 1 July 2026 and guarantees 125 days of wage employment in a financial year to eligible rural households. Rural households may apply for a job card through the Gram Panchayat.",
         "eligibility": "The scheme applies to rural households whose adult members volunteer for unskilled manual work, subject to official registration and verification.",
         "documents": ["Household member names and ages", "Village and Gram Panchayat", "Photographs and residence details as requested by the Gram Panchayat"],
         "workflow": ["Enter household and village details", "Submit an AI Seva guidance request", "File or complete the official request with the Gram Panchayat"],
-        "result": ["AI Seva tracking ID", "Request status"], "official_link": "https://nrega.nic.in/",
+        "result": ["AI Seva tracking ID", "Request status"], "official_link": "https://vbgramg.dord.gov.in/vbgramg/home.aspx",
     },
 ]
 
